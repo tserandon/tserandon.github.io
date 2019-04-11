@@ -75,6 +75,33 @@ body {
   background: #ddd;
 }
 
+.sidenav {
+  height: 100%;
+  width: 200px;
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  background-color: #111;
+  overflow-x: hidden;
+  padding-top: 20px;
+}
+
+.sidenav a {
+  padding: 6px 6px 6px 32px;
+  text-decoration: none;
+  font-size: 25px;
+  color: #818181;
+  display: block;
+}
+
+.sidenav a:hover {
+  color: #f1f1f1;
+}
+
+.main {
+  margin-left: 200px; /* Same as the width of the sidenav */
+}
 
 /* Responsive layout - when the screen is less than 400px wide, make the navigation links stack on top of each other instead of next to each other */
 @media screen and (max-width: 400px) {
@@ -82,6 +109,8 @@ body {
     float: none;
     width:100%;
   }
+  .sidenav {padding-top: 15px;}
+  .sidenav a {font-size: 18px;}
 }
 </style>
 </head>
@@ -92,21 +121,30 @@ body {
   <p>Thomas Serandon</p>
 </div>
 
-<div class="navbar">
-  <a href="Y12" style="width:25%">Terminale</a>
-  <a href="Y12spe" style="width:25%">Terminale spécialité</a>
-  <a href="Y10" style="width:25%">Seconde</a>
-  <a href="Y7" style="width:25%">Cinquième</a>
+<div class="sidenav">
+  <a href="#COURS">Cours</a>
+  <a href="#ACTIVITES">Activités</a>
+  <a href="#DS">Tests</a>
+  <a href="#RESSOURCES">Ressources</a>
 </div>
 
 <div class="main">
-    <h2>IMPORTANT INFORMATION</h2>
+    <h2 id="COURS">Cours</h2>
     <h5>April 10, 2019</h5>
     <p>Website under construction</p>
     <br>
-    <h2>ANNOUNCEMENT : Y12</h2>
-    <h5>April 10, 2019</h5>
-    <p>Please sign up for the make-up exam : <a href="http://www.google.com">cliquer ici</a></p>
+    <h2 id="ACTIVITES">Activités</h2>
+    <h5>April 11, 2019</h5>
+    <p>Website under construction</p>
+    <br>
+     <h2 id="DS">Tests</h2>
+    <h5>April 12, 2019</h5>
+    <p>Website under construction</p>
+    <br>
+     <h2 id="RESSOURCES">Ressources</h2>
+    <h5>April 13, 2019</h5>
+    <p>Website under construction</p>
+    <br>
   </div>
 </div>
 
