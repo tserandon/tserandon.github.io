@@ -105,9 +105,18 @@ body {
 /* Add some content at the bottom of the video/page */
 
 
-.content {
+.tcontent {
   position: fixed;
   top: 0;
+  background: rgba(0, 0, 0, 0.5);
+  color: #f1f1f1;
+  width: 100%;
+  padding: 20px;
+}
+  
+.bcontent {
+  position: fixed;
+  bottom: 0;
   background: rgba(0, 0, 0, 0.5);
   color: #f1f1f1;
   width: 100%;
@@ -126,7 +135,7 @@ body {
 
 
   
-<div class="content">
+<div class="tcontent">
   <div class="header">
   <h1>Sciences, Education & Photography</h1>
   <p>Thomas Serandon</p>
@@ -139,13 +148,12 @@ body {
   <a href="Computer" style="width:20%">Computer</a>
   <a href="Photography" style="width:20%">Photography</a>
 </div>
-  
- 
- 
-  <p>by Thomas Serandon (version 2020/01/17)</p>
+
 </div> 
 
-
+<div class="bcontent">
+  <p text-align="center">by Thomas Serandon (version 2020/01/17) - <a href="AboutMe">About me</a></p>
+</div> 
 
 </body>
 </html>
