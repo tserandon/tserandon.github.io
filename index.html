@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<title>Serandon - Physics & Photography</title>
+<title>Serandon - High School</title>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
@@ -16,10 +16,19 @@ body {
 
 /* Style the header */
 .header {
-  padding: 20px;
+  padding: 5px;
   text-align: center;
   background: #034f84;
   color: white;
+}
+
+/* Double column environment */
+.row {
+  display: flex;
+}
+
+.column {
+  flex: 50%;
 }
 
 /* Increase the font size of the h1 element */
@@ -54,23 +63,9 @@ body {
   color: black;
 }
 
-/* Column container */
-.row {  
-  display: flex;
-  flex-wrap: wrap;
-}
-
-/* Create two unequal columns that sits next to each other */
-/* Sidebar/left column */
-.side {
-  flex: 15%;
-  background-color: #f1f1f1;
-  padding: 20px;
-}
 
 /* Main column */
 .main {   
-  flex: 85%;
   background-color: white;
   padding: 20px;
 }
@@ -89,12 +84,6 @@ body {
   background: #ddd;
 }
 
-/* Responsive layout - when the screen is less than 700px wide, make the two columns stack on top of each other instead of next to each other */
-@media screen and (max-width: 700px) {
-  .row {   
-    flex-direction: column;
-  }
-}
 
 /* Responsive layout - when the screen is less than 400px wide, make the navigation links stack on top of each other instead of next to each other */
 @media screen and (max-width: 400px) {
@@ -103,15 +92,34 @@ body {
     width:100%;
   }
 }
+  
+/* Style the video: 100% width and height to cover the entire window */
+#myVideo {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  min-width: 100%;
+  min-height: 100%;
+}
+
+/* Add some content at the bottom of the video/page */
+.content {
+  position: fixed;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  color: #f1f1f1;
+  width: 100%;
+  padding: 20px;
+}
 </style>
 </head>
 <body>
-
+ 
 <div class="header">
-  <h1>Physics & Photography</h1>
+  <h1>Sciences, Education & Photography</h1>
   <p>Thomas Serandon</p>
 </div>
-
+  
 <div class="navbar">
   <a href="https://www.atheoryaboutsomethings.com">Blog</a>
   <a href="HighSchool">High School</a>
@@ -120,31 +128,24 @@ body {
   <a href="Photography" class="right">Photography</a>
 </div>
 
-<div class="row">
-  <div class="side">
-    <h2>About Me</h2>
-    <img src="/images/titlepage.jpg" style="width:128px;height:128px;border:0;"> 
-    <p>Thomas Serandon is currently teaching physics and chemistry at Lycée Français de New York.</p>
-    <h3>Contact information</h3>
-    <p>tserandon@lfny.org</p>
-  </div>
-  <div class="main">
-    <h2>IMPORTANT INFORMATION</h2>
-    <h5>April 10, 2019</h5>
-    <p><a href="https://www.nationalgeographic.com/science/2019/04/first-picture-black-hole-revealed-m87-event-horizon-telescope-astrophysics/">First-ever picture of a black hole unveiled (National Geographic)</a></p>
-    <p>Veritasium : How to Understand the Image of a Black Hole</p>
-    <iframe width="560" height="315" src="https://www.youtube.com/embed/zUyH3XhpLTo" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-    <br>
-    <br>
-    <h2>ANNOUNCEMENT : Y12</h2>
-    <h5>April 10, 2019</h5>
-    <p>Please sign up for the make-up exam : <a href="http://www.google.com">cliquer ici (test link to google.com)</a></p>
-  </div>
+<div class="main">
+ <!-- The video -->
+<video autoplay muted loop id="myVideo">
+  <source src="rain.mp4" type="video/mp4">
+</video>
+
+<!-- Optional: some overlay text to describe the video -->
+<div class="content">
+  <h1>Heading</h1>
+  <p>Lorem ipsum...</p>
+</div> 
 </div>
 
 <div class="footer">
-  <h2> Thomas Serandon --- 2019</h2>
+<h2> Thomas Serandon - Last Updated : 2020/01/17</h2>
 </div>
+
 
 </body>
 </html>
+
