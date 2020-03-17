@@ -1,0 +1,778 @@
+
+
+<!DOCTYPE html>
+<html lang=fr> 
+<head>
+<title> Dosage par titrage </title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<script src="https://physique-chimie.discip.ac-caen.fr/sites/physique-chimie.discip.ac-caen.fr/squelettes/js/mathplot.js"></script>
+<style>
+@font-face {
+    font-family: afficheur;
+    src: url(../ttf/lcd.ttf);
+    font-weight: bold;
+}
+</style>
+
+</head>
+<body onload="reinit();reinit()">
+	
+<div style="width:1210px;margin:auto">
+		<div class="centre">
+			<canvas id="experience" width="350" height="750"  style="background:#999999;margin:10px;border-radius:5px;box-shadow: 2px 2px 5px black;" oncontextmenu="return false" title="Mettre en marche l'agitation puis ouvrir le robinet en cliquant sur le dispositif concerné"></canvas>
+			<div style="display:inline-block;width:800px;height:750px;" >
+				<div class=doc style="display:inline-block;width:735px;height:155px;" >
+				<table class=sans>
+					<tr><th></th><th>Réactif  à titrer</th><th>Réactif titrant</th><th>Indicateur coloré</th></tr>
+					<tr><td></td><td>
+					<select id="titre" onchange="choixTitre(this.value)">
+						<option value="0">acide chlorhydrique</option>
+						<option value="1">acide éthanoïque</option>
+					</select></td>					
+					<td><select id="titrant" disabled>
+						<option value="0">hydroxyde de sodium</option>
+					</select></td>	
+					<td><select id="inc" onchange="choixindic(this.value)">
+						<option value="0">Sans</option>
+						<option value="0">Option désactivée</option>
+					</select></td>	
+					</tr>
+					<tr><th>Concentration</th>
+					<td><select id="conct" onchange="changeConcentration(this.value);">
+						<option value="0.1">0.1 mol/L</option>
+						<option value="0.0833" >TP Vinaigre</option>
+					</select></td>	
+					<td><select  onchange="Cb=parseFloat(this.value);Veq=Ca*Va/Cb;pHeq=calculPh(Veq,true);PH=calculPh(0,true);dessineTout();">
+						<option value="0.1">0.100 mol/L</option>
+						<option value="0.01">0.010 mol/L</option>
+					</select></td><td></td>
+					</tr>
+						<tr><th>Volume</th>
+					<td><select id="volume" onchange="Va=parseFloat(this.value);Veq=Ca*Va/Cb;pHeq=calculPh(Veq,true);PH=calculPh(0,true);hauteurTitre=Va;dessineTout();">
+						<option value="5">5 mL</option>
+						<option value="10">10 mL</option>
+						<option value="20">20 mL</option>
+						<option value="25">25 mL</option>
+					</select></td>	
+					<td></td><td></td>
+					</tr>
+				</table>	<br>
+				<button id="tangente" style="margin-right:25px;width:200px" onclick="tangente()" disabled> Méthode des tangentes </button>
+				<button style="margin-right:25px;;width:200px" id="dérivée" onclick="traceDerive()" disabled> Dérivée dpH/dV </button>
+				<button id="reset" style="margin-right:25px;width:200px" onclick="reinit()" disabled> Réinitialiser </button><br>
+				</div>
+				<canvas id="graphique" width="745" height="560"  style="background:#f0f0f0;margin:10px;border-radius:5px;box-shadow: 2px 2px 5px black;" oncontextmenu="return false" ></canvas>
+				<div class=centre style="font-size:0.8em"><a href="http://creativecommons.org/licenses/by-nc-sa/4.0/"> <img src="https://i.creativecommons.org/l/by-nc-sa/4.0/80x15.png" title="Cette animation est mise à disposition selon les termes de la Licence Creative Commons : Attribution -  Pas d’Utilisation Commerciale - Partage dans les Mêmes Conditions 4.0 International"></a> Jean-Luc Leloire Lycée Marie Curie Vire 2018</div>
+			</div>
+			<script>
+			var chemin="https://physique-chimie.discip.ac-caen.fr/sites/physique-chimie.discip.ac-caen.fr/IMG/png/"
+			
+			var canvas = document.getElementById("experience");
+			var ctx=canvas.getContext("2d");
+			var canvas2 = document.getElementById("graphique");
+			var ctx2=canvas2.getContext("2d");
+			
+			canvas.addEventListener("mousedown", mescommandes, true);
+			canvas.addEventListener("mousemove", moncurseur, false);
+			//canvas.addEventListener("mouseup", annule, false);
+			
+			//becher
+			var hauteurCuve=130;
+			var largeurCuve=52;
+			var posCuveX=120;
+			var posCuveY=500;
+			var couleurCuve='#8ef6eb';
+			var hauteurCouvercle=30;
+			var largeurCouvercle=160;
+			var couleurCouvercle='#83c6ec';
+			
+			//burette
+			var hauteurBur=380;
+			var largeurBur=10;
+			var posBurX=100;
+			var posBurY=20;
+			//graduation burette
+			var deltaH=(hauteurBur-50)/26;
+			//entonnoir burette
+			var hauteurEntonnoir=3;
+			var largeurEntonnoir=20;
+			var posEntonnoirX=100;
+			var posEntonnoirY=16;
+			//pipette burette
+			var hauteurPip=100;
+			var largeurPip=2;
+			var posPipX=100;
+			var posPipY=400;
+			//robinet burette
+			var hauteurRob=30;
+			var largeurRob=5;
+			var posRobX=73;
+			var posRobY=418;
+			var couleurRob='#00000';
+			var robinetO=new Image();
+			robinetO.src=chemin+"tp24_5_1.png";
+			var robinetF=new Image();
+			robinetF.src=chemin+"tp24_5_2.png";
+			//sondephmètre
+			var pH=new Image();
+			pH.src=chemin+"tp24_2.png";
+			var posPHX=130;
+			var posPHY=420;
+			//phmètre
+			var boitierpH=new Image();
+			boitierpH.src=chemin+"tp24_6.png";
+			var posBoitierPHX=200;
+			var posBoitierPHY=500;
+			var PH=1.000;
+			// fil phmètre
+			var filpH=new Image();
+			filpH.src=chemin+"tp24_7.png";
+			var posfilPHX=147;
+			var posfilPHY=385;
+			//loupe
+			var hauteurLoupe=100;
+			var largeurLoupe=30;
+			var posLoupeX=200;
+			var posLoupeY=posBurY;
+			var couleurLoupe='#00000';
+			
+			//oeil
+			var oeil=new Image();
+			oeil.src=chemin+"tp24_1.png";
+			var posOeilX=120;
+			var posOeilY=posBurY;
+			
+			//agitateur
+			var barreau=new Array()
+			for (var i=0;i<6;i++){
+				barreau.push(new Image());
+				barreau[i].src=chemin+"tp24_3_"+(i+1)+".png";
+			}
+			var agitation=false;	
+			var barreauActif=0;
+			var posBarreauX=posCuveX-15;
+			var posBarreauY=posCuveY+hauteurCuve-25;
+			var tempo=20;
+			
+			var agitateur=new Image();
+			agitateur.src=chemin+"tp24_4.png";
+			var posAgitX=4;
+			var posAgitY=602;
+			var alea=1;
+			
+			//liquideCuve
+			var hauteurTitre=5;
+			var couleurTitre='#cfdedc';//#6fb6cF';
+			//liquideBurette
+			var volumeTitrant=25;
+			var hauteurTitrant=posBurY+50+deltaH*(25-volumeTitrant);
+			var couleurTitrant='#cfdedc';//#6fb6cF';
+			
+			//animation dosage
+			var runAnim=false;
+			var onverse=false;
+			var volverse=0.1;
+			var compteur=0;
+			var volumeVerse=0;
+			
+			//courbes tracées
+			deriveTracee=false;
+			tangenteTracee=false;
+			
+			//indicateur coloré
+			indic=[	[0,14,'#cfdedc','#cfdedc','#cfdedc'],
+					[3.1,4.4,'#f18888','#f3bd87','#f3f4b6'],
+					[6.0,7.6,'#f3f4b6','#89d589','#86b0e3'],
+					[8.2,10.0,'#cfdedc','#f6bfee','#f9a2ec']
+				]
+			var phMin=0;
+			var phMax=0;
+			var couleur1='#cfdedc';
+			var couleur2='#cfdedc';
+			var couleur3='#cfdedc';
+			
+			
+			//variable pour calcul pH
+			//type = 0 dosage acide fort par base forte
+			//type = 1 dosage acide faible par base forte
+			//type = 2 dosage base forte par acide fort
+			//type = 3 dosage base faible par acide fort
+			var type=0;
+			//le titré
+			var Ca=0.1;
+			var Va=5;
+			//le titrant
+			var Cb=0.1;
+			var pKa=4.8;
+			//l'équivalence
+			var Veq=Ca*Va/Cb;
+			var pHeq=7;
+			//mémorisation des données de la courbe
+			var mesure=new Array();
+			var derivee=new Array();
+			
+			function log(y) {
+				return Math.log(y) / Math.log(10);
+			}
+			
+			
+			function random(min, max) {
+				return Math.random() * (max - min) + min;
+			}
+			
+			
+			function getPosition(evt){
+				var x = new Number();
+				var y = new Number();
+				var p = new Array();
+				if (evt.x != undefined && evt.y != undefined)
+				{
+				  x = evt.x+document.body.scrollLeft+
+					  document.documentElement.scrollLeft;
+				  y = evt.y+document.body.scrollTop +
+					  document.documentElement.scrollTop;
+				}
+				else // Firefox method to get the position
+				{
+				  x = evt.clientX + document.body.scrollLeft 
+				  y = evt.clientY + document.body.scrollTop;
+				}
+
+				p.push(x);p.push(y);
+				return p
+			}	
+				
+			function moncurseur(evt){
+				var p1 =getPosition(evt);
+				var x =p1[0];
+				var y= p1[1];
+				x -= canvas.offsetLeft+ canvas.offsetParent.offsetLeft;
+				y -= canvas.offsetTop+ canvas.offsetParent.offsetTop;					
+				if ((x>106&&x<158&&y>685&&y<726)||(x>105&&x<140&&y>410&&y<450)){
+					canvas.style.cursor="pointer";
+					}
+				else{
+					canvas.style.cursor="default";
+				}
+			}	 
+		
+			function mescommandes(evt){
+				var p =getPosition(evt);
+				var x =p[0];
+				var y=p[1];
+				x -= canvas.offsetLeft+ canvas.offsetParent.offsetLeft;
+				y -= canvas.offsetTop+canvas.offsetParent.offsetTop;					
+				if (x>106&&x<158&&y>685&&y<726){
+					agitation=!agitation
+				}
+				if (x>105&&x<140&&y>410&&y<450){
+					onverse=!onverse;
+				}
+				if (agitation||onverse){
+					runAnim=true;animation();
+					document.getElementById("tangente").disabled=true;
+					document.getElementById("dérivée").disabled=true;
+					document.getElementById("reset").disabled=true;
+				}
+				else{
+					runAnim=false;dessineTout()
+				};	
+				if (!onverse){
+					if (volumeVerse>Veq+2){document.getElementById("tangente").disabled=false;}
+					document.getElementById("dérivée").disabled=false;
+					document.getElementById("reset").disabled=false;
+				}	
+			}
+		
+			function efface(context){
+				context.clearRect(0,0,600,750);
+				context.font="12px Arial";
+			}
+			
+			function drawOval(context,x, y, rw, rh,depart,fin,alpha,epaisseurTour,couleurTour,rempli,couleurRemplissage)	{
+				context.save();
+				context.scale(1,  rh/rw);
+				context.beginPath();
+				context.globalAlpha =alpha;
+				context.arc(x, y/rh*rw, rw, depart, fin,false);
+				context.lineWidth=epaisseurTour;
+				context.strokeStyle=couleurTour;
+				context.stroke();
+				if (rempli==true){
+					context.fillStyle=couleurRemplissage;
+					context.fill();
+				}	
+				context.closePath();
+				context.restore();
+			}		
+						
+			function dessineGraduation(context,posX,posY,hauteur,largeur,couleur,alpha,avant,depart,fin){
+					drawOval(context,posX, hauteur+posY,largeur,largeur/3, depart,fin, alpha,1,couleur,false,couleur);
+			}	
+			
+			function dessineCuve(context,posX,posY,hauteur,largeur,couleur,alpha,avant){
+			//avant : false dessine l'arrière ; avant: true dessine l'avant
+				if (avant){
+					var depart=0;var fin=Math.PI;
+				}
+				else{
+					var depart=Math.PI;var fin=2*Math.PI;
+				}	
+				for (var i=0;i<hauteur;i++){
+					drawOval(context,posX, hauteur-i+posY,largeur,largeur/3, depart,fin, alpha,1,couleur,false,couleur);
+				}
+				if (hauteur==0){drawOval(context,posX, hauteur+posY,largeur,largeur/3, depart,fin, alpha,1,couleur,true,couleur);}
+				//reflet lumineux
+				/*if (avant){
+					with (context){
+						beginPath();
+						strokeStyle='white';
+						for (var i=0;i<5;i++){
+							moveTo(posX+largeur-10-i,posY+80-2*Math.cos(i));
+							lineTo(posX+largeur-10-i,hauteur+posY-50-2*Math.cos(i));
+						}	
+						stroke();
+					}	
+				}*/	
+			}
+			
+			function dessineEluant(context,posX,posY,hauteur,largeur,couleur,alpha,avant){
+			//avant : false dessine l'arrière ; avant: true dessine l'avant
+				if (avant){
+					var depart=0;var fin=Math.PI;
+				}
+				else{
+					var depart=Math.PI;var fin=2*Math.PI;
+				}	
+				for (var i=0;i<hauteur;i++){
+					drawOval(context,posX, posY-i,largeur,largeur/3,depart,fin, alpha,1,couleur,false,couleur);
+				}
+				drawOval(context,posX, posY-hauteur,largeur,largeur/3, depart,fin, alpha,1,couleur,true,couleur);
+				drawOval(context,posX, posY,largeur,largeur/3, depart,fin, alpha,1,couleur,true,couleur);
+				
+			}
+			
+			function dessineTout(){
+				efface(ctx);
+				ctx.drawImage(agitateur,posAgitX,posAgitY);	
+				if (onverse){ctx.drawImage(robinetO,posRobX,posRobY)}else{ctx.drawImage(robinetF,posRobX,posRobY)};	
+				ctx.drawImage(boitierpH,posBoitierPHX,posBoitierPHY);	
+				ctx.drawImage(filpH,posfilPHX,posfilPHY);	
+				
+				ctx.textAlign="right";
+				ctx.font="10px afficheur";
+				ctx.fillText("pH",290,575);
+				ctx.font="25px afficheur";
+				if (PH<10){ctx.fillText(PH.toPrecision(3),293,600)}else{ctx.fillText(PH.toPrecision(4),293,600)};
+				ctx.font="12px Arial";
+				ctx.textAlign="left";
+			//arrière
+				//becher
+				dessineCuve(ctx,posCuveX,posCuveY,hauteurCuve,largeurCuve,couleurCuve,0.2,false);
+				dessineEluant(ctx,posCuveX,posCuveY+hauteurCuve-10,hauteurTitre,largeurCuve-3,couleurTitre,0.8,false);
+				//électrode pH
+				//dessineCuve(ctx,posPHX,posPHY,hauteurPH,largeurPH,couleurPH,1,false);
+				//burette
+				dessineCuve(ctx,posEntonnoirX,posEntonnoirY,hauteurEntonnoir,largeurEntonnoir,couleurCuve,0.2,false);
+				dessineCuve(ctx,posBurX,posBurY,hauteurBur,largeurBur,couleurCuve,0.2,false);
+				dessineEluant(ctx,posBurX,posBurY+hauteurBur,hauteurBur-30+deltaH*(volumeTitrant-25),largeurBur-3,couleurTitrant,0.8,false);
+				//dessineCuve(ctx,posRobX,posRobY,hauteurRob,largeurRob,couleurRob,1,false);
+				dessineCuve(ctx,posPipX,posPipY,hauteurPip,largeurPip,couleurCuve,0.2,false);
+				//loupeBurette
+				if (volumeTitrant>0.3){
+					var pos=volumeTitrant-Math.floor(volumeTitrant);
+					dessineCuve(ctx,posLoupeX,posLoupeY-20,hauteurLoupe+4,largeurLoupe,couleurCuve,0.2,false);
+					dessineEluant(ctx,posLoupeX,posLoupeY-20+hauteurLoupe,hauteurLoupe/2,largeurLoupe-3,couleurTitrant,0.8,false)
+					}
+				//filet de titrant
+				if (onverse){dessineEluant(ctx,posPipX,posCuveY+hauteurCuve-15-hauteurTitre,0,10,"#dddddd",1,false);
+							 dessineEluant(ctx,posPipX,posCuveY+hauteurCuve-15-hauteurTitre,posCuveY+hauteurCuve-10-hauteurTitre-posPipY-hauteurPip,1,couleurTitrant,1,false);
+							 dessineEluant(ctx,posPipX,posCuveY+hauteurCuve-15-hauteurTitre,0,10,"#dddddd",1,true);
+				}			
+				
+			//avant
+				
+				//loupe
+				if (volumeTitrant>0.3){
+					var pos=volumeTitrant-Math.floor(volumeTitrant);
+					dessineCuve(ctx,posLoupeX,posLoupeY-20,hauteurLoupe+4,largeurLoupe,couleurCuve,0.2,true);
+					dessineEluant(ctx,posLoupeX,posLoupeY-20+hauteurLoupe,hauteurLoupe/2,largeurLoupe-3,couleurTitrant,0.8,true)
+				
+					for (var j=-5+pos;j<5+pos;j++){
+						if (10*volumeVerse+j+5>4){
+							if (Math.abs(Math.floor(-9*pos+j+5))!=5 ){
+								dessineGraduation(ctx,posLoupeX,posLoupeY-20+10*(j-5)+pos+hauteurLoupe,1,largeurLoupe,'#000000',1,true,Math.PI/3,2*Math.PI/3);
+							}
+							else
+							{
+								if (volumeTitrant<0.5){couleurLoupe="#ff0000"}else{couleurLoupe="#000000"};
+								dessineGraduation(ctx,posLoupeX,posLoupeY-20+10*(j-5)+pos+hauteurLoupe,1,largeurLoupe,couleurLoupe,1,true,0,Math.PI);
+								ctx.fillText(25-Math.ceil(volumeTitrant-0.5),posLoupeX+17,posLoupeY-20+10*(j-5)+pos+hauteurLoupe);
+							}
+						}
+											
+					}	
+					ctx.drawImage(oeil,posOeilX,posOeilY+5);
+				}
+				
+				/*	
+				dessineCuve(ctx,posLoupeX,posLoupeY,hauteurLoupe,largeurLoupe,couleurCuve,0.2,true);
+				if(volumeTitrant>0 && volumeTitrant<25){
+				dessineEluant(ctx,posLoupeX,posLoupeY+hauteurLoupe,hauteurLoupe*(volumeTitrant-Math.floor(volumeTitrant)),largeurLoupe-3,couleurTitrant,0.8,true);
+				dessineGraduation(ctx,posLoupeX,posLoupeY,1,largeurLoupe,'#000000',1,true,0,Math.PI);
+				for (var j=0;j<10;j++){
+					dessineGraduation(ctx,posLoupeX,posLoupeY+10*j,1,largeurLoupe,'#000000',1,true,Math.PI/3,2*Math.PI/3);
+				}
+				if (volumeTitrant<1){couleurLoupe="#ff0000"}else{couleurLoupe="#000000"};
+				dessineGraduation(ctx,posLoupeX,posLoupeY+hauteurLoupe,1,largeurLoupe,couleurLoupe,1,true,0,Math.PI);
+				ctx.fillText(25-Math.floor(volumeTitrant)-1,posLoupeX+15,posLoupeY+25);
+				ctx.fillText(25-Math.floor(volumeTitrant),posLoupeX+15,posLoupeY+hauteurLoupe);
+				}
+				else{
+					if (volumeTitrant==0){
+					dessineEluant(ctx,posLoupeX,posLoupeY+hauteurLoupe,hauteurLoupe,largeurLoupe-3,couleurTitrant,0.8,true);
+					dessineGraduation(ctx,posLoupeX,posLoupeY,1,largeurLoupe,'#ff0000',1,true,0,Math.PI);
+					ctx.fillText(25,posLoupeX+15,posLoupeY+25);
+					}else{
+					dessineEluant(ctx,posLoupeX,posLoupeY+hauteurLoupe,1,largeurLoupe-3,couleurTitrant,0.8,true);
+					dessineGraduation(ctx,posLoupeX,posLoupeY+hauteurLoupe,1,largeurLoupe,'#000000',1,true,0,Math.PI);
+					ctx.fillText(0,posLoupeX+15,posLoupeY+hauteurLoupe);
+					}	
+				}
+				
+					
+				}
+				*/
+				
+				//burette
+				dessineCuve(ctx,posPipX,posPipY,hauteurPip,largeurPip,couleurCuve,0.2,true);
+				//dessineCuve(ctx,posRobX,posRobY,hauteurRob,largeurRob,couleurRob,1,true);
+				dessineEluant(ctx,posBurX,posBurY+hauteurBur,hauteurBur-30+deltaH*(volumeTitrant-25.0),largeurBur-3,couleurTitrant,0.8,true);
+				dessineCuve(ctx,posBurX,posBurY,hauteurBur,largeurBur,couleurCuve,0.2,true);
+				dessineCuve(ctx,posEntonnoirX,posEntonnoirY,hauteurEntonnoir,largeurEntonnoir,couleurCuve,0.2,true);
+				dessineCuve(ctx,posCuveX,posCuveY,hauteurCuve,largeurCuve,couleurCuve,0.2,true);
+				for (var i=0;i<25;i++){
+					dessineGraduation(ctx,posBurX,posBurY+deltaH*i+30,1,largeurBur,'#000000',1,true,0,Math.PI);
+					for (var j=0;j<5;j++){
+						dessineGraduation(ctx,posBurX,posBurY+deltaH*i+30+deltaH/5*j,1,largeurBur,'#000000',1,true,Math.PI/3,2*Math.PI/3);
+					}	
+				}
+				dessineGraduation(ctx,posBurX,posBurY+deltaH*25+30,1,largeurBur,'#ff0000',1,true,0,Math.PI);
+				//électrode pH
+				//dessineCuve(ctx,posPHX,posPHY,hauteurPH,largeurPH,couleurPH,1,true);
+				ctx.drawImage(pH,posPHX,posPHY);
+						
+				//becher
+				dessineEluant(ctx,posCuveX,posCuveY+hauteurCuve-10,hauteurTitre,largeurCuve-3,couleurTitre,0.8,true);
+				dessineCuve(ctx,posCuveX,posCuveY,hauteurCuve,largeurCuve,couleurCuve,0.2,true);
+				//barreau aimanté
+				ctx.drawImage(barreau[barreauActif],posBarreauX,posBarreauY);
+				//correction surface en contact éléctrode pH
+				if (posCuveY+hauteurCuve-hauteurTitre-12<611){
+				dessineCuve(ctx,posPHX+19,posCuveY+hauteurCuve-hauteurTitre-10,1,7,'#08315e',0.8,true);
+				ctx.fillStyle='#08315e';
+				ctx.strokeStyle='#08315e';
+				ctx.moveTo(posPHX+11,posCuveY+hauteurCuve-hauteurTitre-9);
+				ctx.lineTo(posPHX+28,posCuveY+hauteurCuve-hauteurTitre-9);
+				ctx.stroke();
+				ctx.fill();
+				}	
+				ctx.fillStyle="black";
+				ctx.strokeStyle="black";
+				//image de l'oeil
+			
+				
+				if (runAnim){setTimeout(animation,tempo)};
+				
+				
+				
+			}	
+			
+			function creeGraphique(){
+				maCourbe=new mathPlot(canvas2);
+				maCourbe.repere.paramX=[0,25,5,5,2,true,0,false,"V(mL)"];
+				maCourbe.repere.paramY=[0,14,14,2,0,true,0,false,"pH"];
+				maCourbe.refresh();
+			}
+				
+			function pHAcideFort(x,Vb){
+				var ph=0;
+				if (x==0){ph=-log(Ca)};
+				if (x>0 && x<1){ph=-log(Ca*Va/(Va+Vb)*(1-x))};
+				if (x==1){ph=7};
+				if (x>1){ph=14+log(Ca*Va/(Va+Vb)*(x-1))};
+				return ph
+			}	
+				
+			function pHAcideFaible(x,Vb){
+				var ph=0;
+				if (x==0){ph=(pKa-log(Ca))/2};
+				if (x>0 && x<1){ph=pKa+log(x/(1-x))};
+				if (x==1){ph=(14+pKa+log(Ca*Cb/(Ca+Cb)))/2};
+				if (x>1){ph=14+log(Ca*Va/(Va+Vb))+log(x-1)};
+				return ph;
+			}	
+			
+			function pHBaseFaible(x,Vb){
+				var oh=0;
+				var pKb=14-pKa
+				if (x==0){oh=(pKb-log(Ca))/2};
+				if (x>0 && x<1){oh=pKb+log(x/(1-x))};
+				if (x==1){oh=(14+pKb+log(Ca*Cb/(Ca+Cb)))/2};
+				if (x>1){oh=14+log(Ca*Va/(Va+Vb))+log(x-1)};
+				return 14-oh;
+			}	
+
+			
+			function pHBaseForte(x,Vb){
+				var ph=0;
+				if (x==0){ph=14+log(Ca)};
+				if (x>0 && x<1){ph=14+log(Ca*Va/(Va+Vb)*(1-x))};
+				if (x==1){ph=7};
+				if (x>1){ph=-log(Ca*Va/(Va+Vb)*(x-1))};
+				return ph;
+			}
+			
+			function calculPh(Vb,agiter){
+				var x=(Vb/Veq).toPrecision(6);
+				if (type==0){var pH=pHAcideFort(x,Vb)};
+				if (type==1){var pH=pHAcideFaible(x,Vb)};
+				if (type==2){var pH=pHBaseForte(x,Vb)};
+				if (type==3){var pH=pHBaseFaible(x,Vb)};
+				couleurTitre=couleur2;
+				if (pH<phMin){couleurTitre=couleur1};
+				if (pH>phMax){couleurTitre=couleur3};
+				//if (!agiter && Vb!=0){if (type>1){pH=pH*1.1}else{pH=pH*0.9}};
+				return pH;
+			}	
+				
+			function derive(){
+				derivee=[];
+				for (var i=1;i<mesure.length;i++){
+					var der=parseFloat((mesure[i][1]-mesure[i-1][1])/(mesure[i][0]-mesure[i-1][0]));
+					der=Math.abs(der);
+					if (der>13.9){der=13.9};
+					if (der>0){
+						derivee.push([mesure[i-1][0],der]);
+					}	
+				}	
+				
+			}		
+			
+			function traceDerive(){
+					derive();
+					var memo=0;
+					var Avirer=false;
+					for (var i=0;i<maCourbe.titres.length;i++){
+						if (maCourbe.titres[i]=="|dpH/dV|"){memo=i;Avirer=true};
+					};
+					if (Avirer){maCourbe.dataMoins(memo)};
+					maCourbe.dataPlus(derivee,"|dpH/dV|","red");
+					maCourbe.refresh();
+			} 
+			
+			function tangente(){
+				//try{
+					//tangente de coeff directeur égale à 1 pour acide et -1 pour base avant l'équivalence 
+					//(0.84 ou -0.84 à cause du rapport d'échelle du repère non orthonormé) 
+					var valeur=0.84;
+					//les mesures vont de 0,1 en 0,1 mL
+					derive();
+					
+					var memo=0;
+					var Avirer=false;
+					for (var i=0;i<maCourbe.titres.length;i++){
+						if (maCourbe.titres[i]==" "){memo=i;Avirer=true;break;};
+					};
+					if (Avirer){
+						for (var i=3;i>-1;i--){maCourbe.dataMoins(memo+i)};
+					}
+					var debut=0;
+					var i=10;
+					//on recherche le point d'intersection de la courbe avec la première tangente
+					while (derivee[i][1]<valeur){
+						i++;
+					}
+					var debut=i;
+					var i=Math.round(Veq*10);
+					//on recherche le point d'intersection de la courbe avec la deuxième tangente
+					while (derivee[i][1]>valeur){
+						i++;
+					}
+					var fin=i;
+					if (type>1){var valeur=-0.84};
+					
+			
+					
+					//calcul des équations des différentes droites à tracer (ordonnées à l'origine)
+					var  b1=mesure[debut][1]-valeur*mesure[debut][0];
+					var  b2=mesure[fin][1]-valeur*mesure[fin][0];
+					// (1) var  bp=calculPh(Veq)+valeur*mesure[Math.round(Veq*10)][0];
+					var bp1=mesure[debut][1]+valeur*mesure[debut][0];//2
+					var bp2=mesure[fin][1]+valeur*mesure[fin][0];//2
+					//var b3=pHeq-valeur*mesure[Math.round(Veq*10)][0];//2
+					var b3=(b1+b2)/2;
+					//coordonnées des points 
+					var A=[mesure[debut][0],mesure[debut][1]]
+					var B=[mesure[fin][0],mesure[fin][1]]
+					var D=[(bp2-b1)/valeur/2,valeur*((bp2-b1)/valeur/2)+b1]
+					var C=[(bp1-b2)/valeur/2,valeur*((bp1-b2)/valeur/2)+b2]
+					var E=[(bp1-b3)/valeur/2,valeur*((bp1-b3)/valeur/2)+b3]
+					var F=[(bp2-b3)/valeur/2,valeur*((bp2-b3)/valeur/2)+b3]
+					//on trace les droites
+					var tangente1=[];
+					if (A[0]<D[0]){
+						for (i=A[0]-1;i<D[0]+1;i++){
+							tangente1.push([i,valeur*i+b1])
+						}	
+					}		
+					else{
+						for (i=D[0]-1;i<A[0]+1;i++){
+							tangente1.push([i,valeur*i+b1])
+						}
+					};	
+					var tangente2=[];
+					if (C[0]<B[0]){
+						for (i=C[0]-1;i<B[0]+1;i++){
+							tangente2.push([i,valeur*i+b2])
+						}
+					}
+					else{
+						for (i=B[0]-1;i<C[0]+1;i++){
+							tangente2.push([i,valeur*i+b2])
+						}
+					};
+					var tangente3=[];
+					if (E[0]<F[0]){
+						for (i=E[0]-1;i<F[0]+1;i++){
+							tangente3.push([i,valeur*i+b3])
+						}
+					}
+					else{
+						for (i=F[0]-1;i<E[0]+1;i++){
+							tangente3.push([i,valeur*i+b3])
+						}
+					};
+					var perpendi=[];
+					if (A[0]<C[0]){
+						for (i=A[0]-1;i<C[0]+1;i++){
+							perpendi.push([i,-valeur*i+bp1])
+						}
+					}
+					else{
+						for (i=C[0]-1;i<A[0]+1;i++){
+							perpendi.push([i,-valeur*i+bp1])
+						}
+					};
+					maCourbe.dataPlus(tangente1," ","#18cd18");
+					maCourbe.dataPlus(tangente2," ","#18cd18");
+					maCourbe.dataPlus(perpendi," ","#487048");
+					maCourbe.dataPlus(tangente3," ","#18cd18");
+					maCourbe.refresh();
+				//}
+				//catch(e){};	
+			}	
+			
+
+			function choixTitre(valeur){
+				type=parseInt(valeur);
+				if (type==1){pKa=4.8;
+				}else{
+					var sources=document.getElementById("conct");
+					if (sources.value=="0.101"||sources.value=="0.0833"||sources.value=="0.133"){sources.value="0.1";Ca=0.1;}
+				}	
+				if (type==3){pKa=9.2};
+				if (type>1){document.getElementById('titrant').value=1}else{document.getElementById('titrant').value=0};
+				PH=calculPh(0,true);
+				dessineTout();
+			}	
+			
+			function changeConcentration(valeur){
+				Ca=parseFloat(valeur);
+				if (valeur=="0.101"||valeur=="0.0833"||valeur=="0.133"){document.getElementById("titre").value="1";type=1;pKa=4.8;document.getElementById("titrant").value="0"};
+				Veq=Ca*Va/Cb;
+				pHeq=calculPh(Veq,true);
+				PH=calculPh(0,true);dessineTout();
+			}	
+			
+			
+			function animation(){
+				//animation du barreau
+				if (agitation){
+					barreauActif=barreauActif+1;
+					if (barreauActif>5){barreauActif=0};
+				}
+				if (onverse){
+					if (volumeVerse<27.6){
+						volumeVerse=volumeVerse*1.00+volverse*1.00;
+						if (Math.round(volumeVerse*100)%10==0){
+							volumeTitrant=(25-volumeVerse);
+							hauteurTitre+=deltaH*volverse/20;
+							posLoupeY=posBurY+deltaH*volumeVerse;
+							posOeilY=posBurY+deltaH*volumeVerse;
+							PH=calculPh(volumeVerse,agitation);
+							maCourbe.efface();
+							mesure.push([volumeVerse,PH]);
+							maCourbe.dataPlus(mesure,"titrage de l'"+ document.getElementById("titre").options[document.getElementById('titre').selectedIndex].text+" par l'"+  document.getElementById("titrant").options[document.getElementById('titrant').selectedIndex].text,"blue");
+							maCourbe.refresh();
+						}
+						
+					}
+					else{
+						onverse=false;
+						agitation=false;
+						runAnim=false;
+						document.getElementById("tangente").disabled=false;
+						document.getElementById("dérivée").disabled=false;
+						document.getElementById("reset").disabled=false;
+						dessineTout();
+					}
+				}
+				if (runAnim){dessineTout()};	
+				
+			}
+	
+			function choixindic(valeur){
+				phMin=indic[valeur][0];
+				phMax=indic[valeur][1];
+				couleur1=indic[valeur][2];
+				couleur2=indic[valeur][3];
+				couleur3=indic[valeur][4];
+				calculPh(volumeVerse,true);
+				dessineTout();
+			}	
+	
+			
+			function reinit(){
+				agitation=false;
+				onverse=false;
+				//runAnim=false;
+				deriveTracee=false;
+				tangenteTracee=false;
+				mesure=[];
+				derivee=[];
+				maCourbe.efface();
+				Va=parseInt(document.getElementById("volume").value);
+				hauteurTitre=Va;
+				volumeTitrant=25;
+				volumeVerse=0;
+				posOeilY=posBurY;
+				posLoupeY=posBurY;
+				PH=calculPh(0,true);
+				dessineTout();				
+				document.getElementById("tangente").disabled=true;
+				document.getElementById("dérivée").disabled=true;
+				document.getElementById("reset").disabled=true;
+			}
+			
+			creeGraphique();
+				
+			</script>
+		</div>		
+	</div>
+	
+
+</body>
+</html>
+
+	
