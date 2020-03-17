@@ -4,7 +4,7 @@
 <head>
 <title> Dosage par titrage </title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<script src="https://physique-chimie.discip.ac-caen.fr/sites/physique-chimie.discip.ac-caen.fr/squelettes/js/mathplot.js"></script>
+<script src="https://github.com/tserandon/tserandon.github.io/blob/master/Computer/mathplot.js"></script>
 <style>
 @font-face {
     font-family: afficheur;
@@ -45,20 +45,10 @@
 					<tr><th>Concentration</th>
 					<td><select id="conct" onchange="changeConcentration(this.value);">
 						<option value="0.1">0.1 mol/L</option>
-						<option value="0.05">0.05 mol/L</option>
-						<option value="0.01">0.01 mol/L</option>
-						<option value="0.005">0.005 mol/L</option>
-						<option value="0.001">0.001 mol/L</option>
-						<option value="0.133" >TP Vinaigre Cristal(?)</option>
-						<option value="0.101" >TP Vinaigre Alcool coloré(?)</option>
-						<option value="0.0833" >TP Vinaigre cidre(?)</option>
+						<option value="0.0833" >TP Vinaigre</option>
 					</select></td>	
 					<td><select  onchange="Cb=parseFloat(this.value);Veq=Ca*Va/Cb;pHeq=calculPh(Veq,true);PH=calculPh(0,true);dessineTout();">
 						<option value="0.1">0.1 mol/L</option>
-						<option value="0.05">0.05 mol/L</option>
-						<option value="0.01">0.01 mol/L</option>
-						<option value="0.005">0.005 mol/L</option>
-						<option value="0.001">0.001 mol/L</option>
 					</select></td><td></td>
 					</tr>
 						<tr><th>Volume</th>
@@ -66,20 +56,17 @@
 						<option value="5">5 mL</option>
 						<option value="10">10 mL</option>
 						<option value="20">20 mL</option>
-						<option value="25">25 mL</option>
 					</select></td>	
 					<td></td><td></td>
 					</tr>
 				</table>	<br>
-				<button id="tangente" style="margin-right:25px;width:200px" onclick="tangente()" disabled> Méthode des tangentes </button>
-				<button style="margin-right:25px;;width:200px" id="dérivée" onclick="traceDerive()" disabled> Dérivée dpH/dV </button>
 				<button id="reset" style="margin-right:25px;width:200px" onclick="reinit()" disabled> Réinitialiser </button><br>
 				</div>
 				<canvas id="graphique" width="745" height="560"  style="background:#f0f0f0;margin:10px;border-radius:5px;box-shadow: 2px 2px 5px black;" oncontextmenu="return false" ></canvas>
 				<div class=centre style="font-size:0.8em"><a href="http://creativecommons.org/licenses/by-nc-sa/4.0/"> <img src="https://i.creativecommons.org/l/by-nc-sa/4.0/80x15.png" title="Cette animation est mise à disposition selon les termes de la Licence Creative Commons : Attribution -  Pas d’Utilisation Commerciale - Partage dans les Mêmes Conditions 4.0 International"></a> Jean-Luc Leloire Lycée Marie Curie Vire 2018</div>
 			</div>
 			<script>
-			var chemin="https://physique-chimie.discip.ac-caen.fr/sites/physique-chimie.discip.ac-caen.fr/IMG/png/"
+			var chemin="https://github.com/tserandon/tserandon.github.io/tree/master/Computer/"
 			
 			var canvas = document.getElementById("experience");
 			var ctx=canvas.getContext("2d");
