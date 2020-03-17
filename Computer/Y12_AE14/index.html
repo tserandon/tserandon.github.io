@@ -56,12 +56,10 @@
 					<td></td><td></td>
 					</tr>
 				</table>	<br>
-				<button id="tangente" style="margin-right:25px;width:200px" onclick="tangente()" disabled> Méthode des tangentes </button>
-				<button style="margin-right:25px;;width:200px" id="dérivée" onclick="traceDerive()" disabled> Dérivée dpH/dV </button>
 				<button id="reset" style="margin-right:25px;width:200px" onclick="reinit()" disabled> Réinitialiser </button><br>
 				</div>
 				<canvas id="graphique" width="745" height="560"  style="background:#f0f0f0;margin:10px;border-radius:5px;box-shadow: 2px 2px 5px black;" oncontextmenu="return false" ></canvas>
-				<div class=centre style="font-size:0.8em"><a href="http://creativecommons.org/licenses/by-nc-sa/4.0/"> <img src="https://i.creativecommons.org/l/by-nc-sa/4.0/80x15.png" title="Cette animation est mise à disposition selon les termes de la Licence Creative Commons : Attribution -  Pas d’Utilisation Commerciale - Partage dans les Mêmes Conditions 4.0 International"></a> Jean-Luc Leloire Lycée Marie Curie Vire 2018</div>
+				<div class=centre style="font-size:0.8em"><a href="http://creativecommons.org/licenses/by-nc-sa/4.0/"> <img src="https://i.creativecommons.org/l/by-nc-sa/4.0/80x15.png" title="Cette animation est mise à disposition selon les termes de la Licence Creative Commons : Attribution -  Pas d’Utilisation Commerciale - Partage dans les Mêmes Conditions 4.0 International"></a> Jean-Luc Leloire Lycée Marie Curie Vire 2018 - Adaptée par Thomas Serandon 2020</div>
 			</div>
 			<script>
 			var chemin="https://physique-chimie.discip.ac-caen.fr/sites/physique-chimie.discip.ac-caen.fr/IMG/png/"
@@ -174,9 +172,7 @@
 			var compteur=0;
 			var volumeVerse=0;
 			
-			//courbes tracées
-			deriveTracee=false;
-			tangenteTracee=false;
+
 			
 			//indicateur coloré
 			indic=[	[0,14,'#cfdedc','#cfdedc','#cfdedc'],
@@ -208,7 +204,6 @@
 			var pHeq=7;
 			//mémorisation des données de la courbe
 			var mesure=new Array();
-			var derivee=new Array();
 			
 			function log(y) {
 				return Math.log(y) / Math.log(10);
@@ -269,16 +264,13 @@
 				}
 				if (agitation||onverse){
 					runAnim=true;animation();
-					document.getElementById("tangente").disabled=true;
-					document.getElementById("dérivée").disabled=true;
 					document.getElementById("reset").disabled=true;
 				}
 				else{
 					runAnim=false;dessineTout()
 				};	
 				if (!onverse){
-					if (volumeVerse>Veq+2){document.getElementById("tangente").disabled=false;}
-					document.getElementById("dérivée").disabled=false;
+					if (volumeVerse>Veq+2){
 					document.getElementById("reset").disabled=false;
 				}	
 			}
@@ -545,134 +537,6 @@
 				return pH;
 			}	
 				
-			function derive(){
-				derivee=[];
-				for (var i=1;i<mesure.length;i++){
-					var der=parseFloat((mesure[i][1]-mesure[i-1][1])/(mesure[i][0]-mesure[i-1][0]));
-					der=Math.abs(der);
-					if (der>13.9){der=13.9};
-					if (der>0){
-						derivee.push([mesure[i-1][0],der]);
-					}	
-				}	
-				
-			}		
-			
-			function traceDerive(){
-					derive();
-					var memo=0;
-					var Avirer=false;
-					for (var i=0;i<maCourbe.titres.length;i++){
-						if (maCourbe.titres[i]=="|dpH/dV|"){memo=i;Avirer=true};
-					};
-					if (Avirer){maCourbe.dataMoins(memo)};
-					maCourbe.dataPlus(derivee,"|dpH/dV|","red");
-					maCourbe.refresh();
-			} 
-			
-			function tangente(){
-				//try{
-					//tangente de coeff directeur égale à 1 pour acide et -1 pour base avant l'équivalence 
-					//(0.84 ou -0.84 à cause du rapport d'échelle du repère non orthonormé) 
-					var valeur=0.84;
-					//les mesures vont de 0,1 en 0,1 mL
-					derive();
-					
-					var memo=0;
-					var Avirer=false;
-					for (var i=0;i<maCourbe.titres.length;i++){
-						if (maCourbe.titres[i]==" "){memo=i;Avirer=true;break;};
-					};
-					if (Avirer){
-						for (var i=3;i>-1;i--){maCourbe.dataMoins(memo+i)};
-					}
-					var debut=0;
-					var i=10;
-					//on recherche le point d'intersection de la courbe avec la première tangente
-					while (derivee[i][1]<valeur){
-						i++;
-					}
-					var debut=i;
-					var i=Math.round(Veq*10);
-					//on recherche le point d'intersection de la courbe avec la deuxième tangente
-					while (derivee[i][1]>valeur){
-						i++;
-					}
-					var fin=i;
-					if (type>1){var valeur=-0.84};
-					
-			
-					
-					//calcul des équations des différentes droites à tracer (ordonnées à l'origine)
-					var  b1=mesure[debut][1]-valeur*mesure[debut][0];
-					var  b2=mesure[fin][1]-valeur*mesure[fin][0];
-					// (1) var  bp=calculPh(Veq)+valeur*mesure[Math.round(Veq*10)][0];
-					var bp1=mesure[debut][1]+valeur*mesure[debut][0];//2
-					var bp2=mesure[fin][1]+valeur*mesure[fin][0];//2
-					//var b3=pHeq-valeur*mesure[Math.round(Veq*10)][0];//2
-					var b3=(b1+b2)/2;
-					//coordonnées des points 
-					var A=[mesure[debut][0],mesure[debut][1]]
-					var B=[mesure[fin][0],mesure[fin][1]]
-					var D=[(bp2-b1)/valeur/2,valeur*((bp2-b1)/valeur/2)+b1]
-					var C=[(bp1-b2)/valeur/2,valeur*((bp1-b2)/valeur/2)+b2]
-					var E=[(bp1-b3)/valeur/2,valeur*((bp1-b3)/valeur/2)+b3]
-					var F=[(bp2-b3)/valeur/2,valeur*((bp2-b3)/valeur/2)+b3]
-					//on trace les droites
-					var tangente1=[];
-					if (A[0]<D[0]){
-						for (i=A[0]-1;i<D[0]+1;i++){
-							tangente1.push([i,valeur*i+b1])
-						}	
-					}		
-					else{
-						for (i=D[0]-1;i<A[0]+1;i++){
-							tangente1.push([i,valeur*i+b1])
-						}
-					};	
-					var tangente2=[];
-					if (C[0]<B[0]){
-						for (i=C[0]-1;i<B[0]+1;i++){
-							tangente2.push([i,valeur*i+b2])
-						}
-					}
-					else{
-						for (i=B[0]-1;i<C[0]+1;i++){
-							tangente2.push([i,valeur*i+b2])
-						}
-					};
-					var tangente3=[];
-					if (E[0]<F[0]){
-						for (i=E[0]-1;i<F[0]+1;i++){
-							tangente3.push([i,valeur*i+b3])
-						}
-					}
-					else{
-						for (i=F[0]-1;i<E[0]+1;i++){
-							tangente3.push([i,valeur*i+b3])
-						}
-					};
-					var perpendi=[];
-					if (A[0]<C[0]){
-						for (i=A[0]-1;i<C[0]+1;i++){
-							perpendi.push([i,-valeur*i+bp1])
-						}
-					}
-					else{
-						for (i=C[0]-1;i<A[0]+1;i++){
-							perpendi.push([i,-valeur*i+bp1])
-						}
-					};
-					maCourbe.dataPlus(tangente1," ","#18cd18");
-					maCourbe.dataPlus(tangente2," ","#18cd18");
-					maCourbe.dataPlus(perpendi," ","#487048");
-					maCourbe.dataPlus(tangente3," ","#18cd18");
-					maCourbe.refresh();
-				//}
-				//catch(e){};	
-			}	
-			
-
 			function choixTitre(valeur){
 				type=parseInt(valeur);
 				if (type==1){pKa=4.8;
@@ -721,8 +585,6 @@
 						onverse=false;
 						agitation=false;
 						runAnim=false;
-						document.getElementById("tangente").disabled=false;
-						document.getElementById("dérivée").disabled=false;
 						document.getElementById("reset").disabled=false;
 						dessineTout();
 					}
@@ -746,10 +608,7 @@
 				agitation=false;
 				onverse=false;
 				//runAnim=false;
-				deriveTracee=false;
-				tangenteTracee=false;
 				mesure=[];
-				derivee=[];
 				maCourbe.efface();
 				Va=parseInt(document.getElementById("volume").value);
 				hauteurTitre=Va;
@@ -759,8 +618,6 @@
 				posLoupeY=posBurY;
 				PH=calculPh(0,true);
 				dessineTout();				
-				document.getElementById("tangente").disabled=true;
-				document.getElementById("dérivée").disabled=true;
 				document.getElementById("reset").disabled=true;
 			}
 			
