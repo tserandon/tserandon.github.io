@@ -11,30 +11,12 @@
     src: url(../ttf/lcd.ttf);
     font-weight: bold;
 }
-.doc{
-	background:#f9f9f9;/*fond blanc dégradé si navigateur compatible*/
-	background:-webkit-linear-gradient(#ffffff,#f9f9f9);
-	background:-moz-linear-gradient(#ffffff,#f9f9f9);
-	background:linear-gradient(#ffffff,#f9f9f9);
-	border-radius:5px;
-	margin:0px 5px 5px 5px;
-	padding:5px 5px 10px 5px;
-	/* BOX SHADOW */
-	-moz-box-shadow: 0 1px 3px black; 
-	-webkit-box-shadow: 0 1px 3px black; 
-	box-shadow: 0 1px 3px black;
-	color:#2020ef;/*les def en rouge*/
-	overflow:auto;
-}
 </style>
 
 </head>
 <body onload="reinit();reinit()">
 	
 <div style="width:1210px;margin:auto">
-	<div class="doc"> <ul><li>Choisir la solution à doser, son volume, sa concentration (éventuellement inconnue) ainsi que la concentration de la solution titrante (acide ou base forte imposée).</li><li> Mettre en marche l'agitation en cliquant sur le gros bouton
-		de l'agitateur. Verser la solution titrante en cliquant sur le robinet. Fermer le robinet en cliquant à nouveau dessus.</li><li> Une fois le titrage terminé, vous pouvez tracer la dérivée dpH/dV ou la méthode des tangentes.</li><li> Par un clic droit sur la courbe, vous pouvez afficher un réticule et faire des mesures.</li></ul></div>
-		
 		<div class="centre">
 			<canvas id="experience" width="350" height="750"  style="background:#999999;margin:10px;border-radius:5px;box-shadow: 2px 2px 5px black;" oncontextmenu="return false" title="Mettre en marche l'agitation puis ouvrir le robinet en cliquant sur le dispositif concerné"></canvas>
 			<div style="display:inline-block;width:800px;height:750px;" >
@@ -45,12 +27,9 @@
 					<select id="titre" onchange="choixTitre(this.value)">
 						<option value="0">acide chlorhydrique</option>
 						<option value="1">acide éthanoïque</option>
-						<option value="2">hydroxyde de sodium</option>
-						<option value="3">ammoniaque</option>
 					</select></td>					
 					<td><select id="titrant" disabled>
 						<option value="0">hydroxyde de sodium</option>
-						<option value="1">acide chlorhydrique</option>
 					</select></td>	
 					<td><select id="inc" onchange="choixindic(this.value)">
 						<option value="0">Sans</option>
@@ -62,20 +41,11 @@
 					<tr><th>Concentration</th>
 					<td><select id="conct" onchange="changeConcentration(this.value);">
 						<option value="0.1">0.1 mol/L</option>
-						<option value="0.05">0.05 mol/L</option>
-						<option value="0.01">0.01 mol/L</option>
-						<option value="0.005">0.005 mol/L</option>
-						<option value="0.001">0.001 mol/L</option>
-						<option value="0.133" >TP Vinaigre Cristal(?)</option>
-						<option value="0.101" >TP Vinaigre Alcool coloré(?)</option>
 						<option value="0.0833" >TP Vinaigre cidre(?)</option>
 					</select></td>	
 					<td><select  onchange="Cb=parseFloat(this.value);Veq=Ca*Va/Cb;pHeq=calculPh(Veq,true);PH=calculPh(0,true);dessineTout();">
-						<option value="0.1">0.1 mol/L</option>
-						<option value="0.05">0.05 mol/L</option>
-						<option value="0.01">0.01 mol/L</option>
-						<option value="0.005">0.005 mol/L</option>
-						<option value="0.001">0.001 mol/L</option>
+						<option value="0.1">0.100 mol/L</option>
+						<option value="0.01">0.010 mol/L</option>
 					</select></td><td></td>
 					</tr>
 						<tr><th>Volume</th>
