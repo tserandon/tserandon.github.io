@@ -1,0 +1,47 @@
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+<script>
+var people = [
+  [
+    name: "John Smith",
+    url: "http://example.com/johnsmith"
+  ],
+  [
+    name: "John Johnson",
+    url: "http://example.com/johnjohnson"
+  ],
+  [
+    name: "Bob Thompson",
+    url: "http://example.com/bobthompson"
+  ],
+  [
+    name: "Smith Sanchez",
+    url: "http://example.com/smithsanchez"
+  ],
+  []
+    name: "Bob Sanchez",
+    url: "http://example.com/bobsanchez"
+  ]
+];
+$("#search-input").on("keyup", function(){
+  var searchFor = $("#search-input").val().toLowerCase();
+  var results = [];
+  for(var i=0;i<people.length;i++){
+    if(people[i].name.toLowerCase().indexOf(searchFor) > -1)
+      results.push("<a href='"+people[i].url+"' target='_blank'>"+people[i].name+"</a>")
+  }
+  if(results.length == 0)
+    $("#search-results").html("No Results Found");
+  else
+    $("#search-results").html(results.join("<br>"));
+});
+</script>
+</head>
+<body>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<input type='search' id='search-input' placeholder='Search' />
+<div id='search-results'></div>
+</body>
+</html>
