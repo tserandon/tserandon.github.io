@@ -1,1 +1,175 @@
-dd
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sciences@NYC</title>
+
+<style>
+html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0% 0%;
+            width: 100%;
+	        background: #000000;
+	font-family: Roboto;
+        }
+
+* {  
+	background: #000000;
+}
+.header {
+  padding: 2%;
+  margin: auto;
+  text-align: center;
+  font-weight: bold;
+  font-size: 200%;
+  background: #00000;
+  color: white;
+}
+	
+.footer {
+  padding: 1%;
+  text-align: center;
+  font-weight: bold;
+  font-size: 100%;
+  background: #000000;
+  color: white;
+}
+
+.main {
+  padding: 5%;
+  text-align: center;
+  font-weight: bold;
+  font-size: 100%;
+  min-height: 500px;
+  background: #000000;
+  color: white;
+}
+	
+.leftside {
+  border-radius: 25px;
+  margin: auto;
+  text-align: center;
+  font-weight: bold;
+  width: 20%;
+  height:500px;
+  font-size: 100%;
+  background: #3E3E3E;
+  color: white;
+  float: left;
+}
+	
+.rightside {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: auto;
+  text-align: center;
+  font-weight: bold;
+  width: 100%;
+  font-size: 100%;
+  background: #000000;
+  color: white;
+  float: right;
+}
+	
+.tile {
+  border-radius: 25px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+  margin: auto;
+  border: 3px solid #FFFFFF;
+  text-align: center;
+  font-weight: bold;
+  width: 20%;
+  font-size: 100%;
+  background: #3E3E3E;
+  color: white;
+  height:50px;
+  float: left;
+}
+	
+.tile:hover {
+  -webkit-transform: translateX(-20%);
+  -ms-transform: translateX(-20%);
+  transform: translateX(-20%);
+  -webkit-transform: translateY(-10%);
+  -ms-transform: translateY(-10%);
+  transform: translateY(-10%);
+  -ms-transform: scale(1.2); /* IE 9 */
+  -webkit-transform: scale(1.2); /* Safari 3-8 */
+  transform: scale(1.2); 
+}	
+	
+.mugshot {
+  padding: 0px;
+  margin: auto;
+  text-align: center;
+  font-weight: bold;
+  width: 90%;
+  font-size: 100%;
+  background: #3E3E3E;
+  color: white;
+}
+	
+.textmugshot {
+  margin: auto;
+  text-align: center;
+  font-weight: bold;
+  width: 90%;
+  height: 30px;
+  font-size: 100%;
+  background: #3E3E3E;
+  color: white;
+}
+
+.gdembed {
+  text-align: center;
+  font-weight: bold;
+  width: 100%;
+  font-size: 100%;
+  background: #000000;
+  color: white;
+  -ms-transform: scale(0.9); /* IE 9 */
+  -webkit-transform: scale(0.9);
+  transform: scale(0.8);
+}
+	
+
+</style>
+	
+</head>
+
+	
+
+<body>
+<main class="main" id="main">
+  <div class="rightside" id="rightside" style="margin-bottom: 50px;">
+    <div class="tile" id="tile" onclick="location.href='#cours';" style="cursor: pointer;">Cours <br> + <br> Activités</div>
+    <div class="tile" id="tile" onclick="location.href='#exo';" style="cursor: pointer;">Exercices <br> + <br> Corrections</div>
+    <div class="tile" id="tile" onclick="location.href='#eval';" style="cursor: pointer;">Évaluations<br> + <br> Corrections</div>
+    <div class="tile" id="tile" onclick="location.href='#cor';" style="cursor: pointer;">Activités<br> <br> (supports)</div>
+  </div>
+<h1 style="text-align: left; padding-left: 5%" id="cours">COURS</h1>
+  <div class="gdembed" id="gdembed">
+  	<iframe src="https://drive.google.com/embeddedfolderview?id=1DnB0_nDOLYQpHulrGJ7OO9stXtcKbfae#grid" width="100%" height="950" frameborder="0"></iframe>
+  </div>
+<h1 style="text-align: left; padding-left: 5%" id="exo">EXERCICES</h1>
+  <div class="gdembed" id="gdembed">
+  	<iframe src="https://drive.google.com/embeddedfolderview?id=1DnB0_nDOLYQpHulrGJ7OO9stXtcKbfae#grid" width="100%" height="950" frameborder="0"></iframe>
+  </div>
+<h1 style="text-align: left; padding-left: 5%" id="eval">ËVALUATIONS</h1>
+  <div class="gdembed" id="gdembed">
+  	<iframe src="https://drive.google.com/embeddedfolderview?id=1DnB0_nDOLYQpHulrGJ7OO9stXtcKbfae#grid" width="100%" height="950" frameborder="0"></iframe>
+  </div>
+<h1 style="text-align: left; padding-left: 5%" id="cor">ACTIVITÉS : ÉLÉMENTS DE CORRECTION &amp; DONNÉES</h1>
+  <div class="gdembed" id="gdembed">
+  	<iframe src="https://drive.google.com/embeddedfolderview?id=1DnB0_nDOLYQpHulrGJ7OO9stXtcKbfae#grid" width="100%" height="950" frameborder="0"></iframe>
+  </div>
+</main>
+<footer class="footer" id="footer"> <a href="https://tserandon.com" style="color: white">Homepage</a> - <a href="https://tserandon.com/cours" style="color: white">Cours</a> - Thomas Serandon - All rights reserved.</footer>
+</body>
+</html>
