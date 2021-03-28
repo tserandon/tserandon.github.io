@@ -1,47 +1,161 @@
+<!doctype html>
 <html>
 <head>
-<meta charset="ISO-8859-1">
-<title>Insert title here</title>
-<script>
-var people = [
-  [
-    name: "John Smith",
-    url: "http://example.com/johnsmith"
-  ],
-  [
-    name: "John Johnson",
-    url: "http://example.com/johnjohnson"
-  ],
-  [
-    name: "Bob Thompson",
-    url: "http://example.com/bobthompson"
-  ],
-  [
-    name: "Smith Sanchez",
-    url: "http://example.com/smithsanchez"
-  ],
-  []
-    name: "Bob Sanchez",
-    url: "http://example.com/bobsanchez"
-  ]
-];
-$("#search-input").on("keyup", function(){
-  var searchFor = $("#search-input").val().toLowerCase();
-  var results = [];
-  for(var i=0;i<people.length;i++){
-    if(people[i].name.toLowerCase().indexOf(searchFor) > -1)
-      results.push("<a href='"+people[i].url+"' target='_blank'>"+people[i].name+"</a>")
-  }
-  if(results.length == 0)
-    $("#search-results").html("No Results Found");
-  else
-    $("#search-results").html(results.join("<br>"));
-});
-</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sciences@NYC</title>
+
+<style>
+html, body {
+            height: 90%;
+            margin: 0;
+            padding: 0% 0%;
+            width: 90%;
+	        background: #000000;
+	font-family: Roboto;
+        }
+
+* {  
+	background: #000000;
+}
+.header {
+  padding: 2%;
+  margin: auto;
+  text-align: center;
+  font-weight: bold;
+  font-size: 200%;
+  background: #00000;
+  color: white;
+}
+	
+.footer {
+  padding: 1%;
+  text-align: center;
+  font-weight: bold;
+  font-size: 100%;
+  background: #000000;
+  color: white;
+}
+
+.main {
+  padding: 5%;
+  text-align: center;
+  font-weight: bold;
+  font-size: 100%;
+  min-height: 500px;
+  background: #000000;
+  color: white;
+}
+	
+.leftside {
+  border-radius: 25px;
+  margin: auto;
+  text-align: center;
+  font-weight: bold;
+  width: 20%;
+  height:500px;
+  font-size: 100%;
+  background: #3E3E3E;
+  color: white;
+  float: left;
+}
+	
+.rightside {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: auto;
+  text-align: center;
+  font-weight: bold;
+  width: 75%;
+  font-size: 100%;
+  background: #000000;
+  color: white;
+  float: right;
+}
+	
+.tile {
+  border-radius: 25px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+  margin: auto;
+  border: 3px solid #FFFFFF;
+  text-align: center;
+  font-weight: bold;
+  width: 25%;
+  font-size: 100%;
+  background: #3E3E3E;
+  color: white;
+  height:200px;
+  float: left;
+}
+	
+tile:hover {
+  -webkit-transform: translateX(-20%);
+  -ms-transform: translateX(-20%);
+  transform: translateX(-20%);
+  -webkit-transform: translateY(-10%);
+  -ms-transform: translateY(-10%);
+  transform: translateY(-10%);
+  -ms-transform: scale(1.2); /* IE 9 */
+  -webkit-transform: scale(1.2); /* Safari 3-8 */
+  transform: scale(1.2); 
+}	
+	
+.mugshot {
+  padding: 0px;
+  margin: auto;
+  text-align: center;
+  font-weight: bold;
+  width: 90%;
+  font-size: 100%;
+  background: #3E3E3E;
+  color: white;
+}
+	
+.textmugshot {
+
+  margin: auto;
+  text-align: center;
+  font-weight: bold;
+  width: 90%;
+  height: 30px;
+  font-size: 100%;
+  background: #3E3E3E;
+  color: white;
+}
+	
+	
+
+</style>
+	
 </head>
+
+	
+
 <body>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-<input type='search' id='search-input' placeholder='Search' />
-<div id='search-results'></div>
+<main class="main" id="main">
+  <div class="leftside" id="leftside">
+	  &nbsp; <br>
+  <img  class="mugshot" src="../mugshot.png"  alt="" />
+	  <div class="textmugshot" id="textmugshot">
+  		<br> <br> Thomas Serandon <br> <br>
+<a href="mailto:thomas@theserandons.com" style="padding: 0px; background: #3E3E3E;color: white;">contact me</a> </p>
+    </div>
+	</div>
+  <div class="rightside" id="rightside" style="margin-bottom: 50px;">
+    <article class="tile" id="tile">Cours Dispensés</article>
+    <article class="tile" id="tile">Méthodologie</article>
+    <article class="tile" id="tile">Arduino x Python</article>
+  </div>
+  <div class="rightside" id="rightside">
+    <article class="tile" id="tile">Scilectus Editions <br> (Transitions)</article>
+    <article class="tile" id="tile">Club Physique</article>
+    <article class="tile" id="tile">Blog Éducation</article>
+  </div>
+</main>
+<footer class="footer" id="footer">Thomas Serandon - All rights reserved.</footer>
 </body>
 </html>
